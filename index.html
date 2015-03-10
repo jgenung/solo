@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<head>
+    <title>Process Visualizer</title>
+    <meta HTTP-EQUIV="X-UA-COMPATIBLE" CONTENT="IE=EmulateIE9" >
+    <script type="text/javascript" src="scripts/d3.min.js"></script>
+    <script type="text/javascript" src="scripts/radialProgress.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+    <style>
+        h1{
+            
+            font-size: 300%;
+            text-align: center;
+            letter-spacing: 14px;
+            padding-right: 160px;
+            float: center;
+            align: center;
+           
+      
+        }
+
+        #test .arc2 {
+            stroke-weight:0.1;
+            fill: #3660b0;
+        }
+        #option {
+            background:#FFFFFF;
+            border-radius: 5px;
+            color: #000;
+            float: right;
+        }
+
+        #outer {
+            background:#FFFFFF;
+            border-radius: 5px;
+            color: #000;
+        }
+
+        #div1, #div2, #div3, #div4, #div5, #div6 {
+            width: 33%;
+            height: 200px;
+            box-sizing: border-box;
+            float: left;
+        }
+
+        #div2 .arc {
+            stroke-weight: 0.1;
+            fill: #f0a417;
+        }
+
+        #div2 .arc2 {
+            stroke-weight: 0.1;
+            fill: #b00d08;
+        }
+
+        #div3 .arc {
+            stroke-weight: 0.1;
+            fill: #1d871b;
+        }
+
+        #div4 .arc {
+            stroke-weight: 0.1;
+            fill: #f0a417;
+        }
+
+        #div5 .arc {
+            stroke-weight: 0.1;
+            fill: #b00d08;
+        }
+
+        #div6 .arc {
+            stroke-weight: 0.1;
+            fill: #1d871b;
+        }
+
+        .selectedRadial {
+            width: 120px;
+            height: 149px;
+            border-radius: 3px;
+            background: #f4f4f4;
+            color: #000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            border: 1px solid rgba(200,200,200,0.85);
+        }
+
+        .radial {
+            border-radius: 3px;
+            background: #FFFFFF;
+            color: #000;
+
+        }
+
+
+    </style>
+</head>
+
+<body>
+<h1>Process Visualizer</h1>
+<div id='outer' style="width: 1000px; height:800px; margin: 0px auto; margin-top:20px; padding:10px">
+    <div id="main" style="width:1000px; height:400px; margin: 0px auto; ">
+        <div id="div1"></div>
+        <div id="div2"></div>
+        <div id="div3"></div>
+        <div id="div4"></div>
+        <div id="div5"></div>
+        <div id="div6"></div>
+    </div>
+    <div id="option">
+    <input name="updateButton" 
+                 type="button" 
+                value="Update" 
+                onclick="updateData()" />
+</div>
+</div>
+
+
+
+<script language="JavaScript">
+
+    setInterval(function(){ /*location.reload();*/updateData(); }, 3000);
+
+    var div1=d3.select(document.getElementById('div1'));
+    var div2=d3.select(document.getElementById('div2'));
+    var div3=d3.select(document.getElementById('div3'));
+    var div4=d3.select(document.getElementById('div4'));
+    var div5=d3.select(document.getElementById('div5'));
+    var div6=d3.select(document.getElementById('div6'));
+
+    var processData;
+
+    d3.json("./text/top6-data.json", function(error, json) {
+      if (error) return console.warn(error);
+      processData = json;
+      start();
+    });
+
+    function onClick1() {
+        deselect();
+        div1.attr("class","selectedRadial");
+        //console.promp()
+        alert(JSON.stringify(processData[0]).replace(/\"/g, "").replace(/,/g, '\n')
+                                            .replace(/{/g, '').replace(/}/g, ''));
+    }
+
+    function onClick2() {
+        deselect();
+        div2.attr("class","selectedRadial");
+         alert(JSON.stringify(processData[1]).replace(/\"/g, "").replace(/,/g, '\n')
+                                          .replace(/{/g, '').replace(/}/g, ''));
+    }
+
+    function onClick3() {
+        deselect();
+        div3.attr("class","selectedRadial");
+        alert(JSON.stringify(processData[2]).replace(/\"/g, "").replace(/,/g, '\n')
+                                        .replace(/{/g, '').replace(/}/g, ''));
+    }
+
+    function onClick4() {
+        deselect();
+        div4.attr("class","selectedRadial");
+        alert(JSON.stringify(processData[3]).replace(/\"/g, "").replace(/,/g, '\n')
+                                            .replace(/{/g, '').replace(/}/g, ''));
+    }
+
+    function onClick5() {
+        deselect();
+        div5.attr("class","selectedRadial");
+        alert(JSON.stringify(processData[4]).replace(/\"/g, "").replace(/,/g, '\n')
+                                          .replace(/{/g, '').replace(/}/g, ''));
+    }
+
+    function onClick6() {
+        deselect();
+        div6.attr("class","selectedRadial");
+        alert(JSON.stringify(processData[5]).replace(/\"/g, "").replace(/,/g, '\n')
+                                            .replace(/{/g, '').replace(/}/g, ''));
+    }
+
+    // function labelFunction(val,min,max) {
+
+    // }
+
+    function deselect() {
+        div1.attr("class","radial");
+        div2.attr("class","radial");
+        div3.attr("class","radial");
+        div4.attr("class","radial");
+        div5.attr("class","radial");
+        div6.attr("class","radial");
+    }
+
+    function start() {
+
+        var rp1 = radialProgress(document.getElementById('div1'))
+                .label(processData[0].COMMAND)
+                .onClick(onClick1)
+                .diameter(150)
+                .value(parseFloat(processData[0].CPU))
+                .render();
+
+        var rp2 = radialProgress(document.getElementById('div2'))
+                .label(processData[1].COMMAND)
+                .onClick(onClick2)
+                .diameter(150)
+                .value(processData[1].CPU)
+                .render();
+
+                //console.log(processData[2].COMMAND);
+        var rp3 = radialProgress(document.getElementById('div3'))
+                .label(processData[2].COMMAND)
+                .onClick(onClick3)
+                .diameter(150)
+                .value(processData[2].CPU)
+                .render();
+
+        var rp4 = radialProgress(document.getElementById('div4'))
+                .label(processData[3].COMMAND)
+                .onClick(onClick4)
+                .diameter(150)
+                .value(processData[3].CPU)
+                .render();
+
+        var rp5 = radialProgress(document.getElementById('div5'))
+                .label(processData[4].COMMAND)
+                .onClick(onClick5)
+                .diameter(150)
+                .value(processData[4].CPU)
+                .render();
+
+        var rp6 = radialProgress(document.getElementById('div6'))
+                .label(processData[5].COMMAND)
+                .onClick(onClick6)
+                .diameter(150)
+                .value(processData[5].CPU)
+                .render();
+
+    }
+
+    function updateData(){
+        //document.getElementsByClassName('label')[0].innerHTML
+        //
+        d3.json("./text/top6-data.json", function(error, json) {
+          if (error) return console.warn(error);
+          processData = json;
+          // document.getElementsByClassName('label')[0].innerHTML = processData[0].COMMAND;
+          // document.getElementsByClassName('label')[2].innerHTML = processData[1].COMMAND;
+          // document.getElementsByClassName('label')[4].innerHTML = processData[2].COMMAND;
+          // document.getElementsByClassName('label')[6].innerHTML = processData[3].COMMAND;
+          // document.getElementsByClassName('label')[8].innerHTML = processData[4].COMMAND;
+          // document.getElementsByClassName('label')[10].innerHTML = processData[5].COMMAND;
+
+          radialProgress(document.getElementById('div1'))
+                .label(processData[0].COMMAND)
+                .onClick(onClick1)
+                .diameter(150)
+                .value(parseFloat(processData[0].CPU))
+                .render();
+
+      radialProgress(document.getElementById('div2'))
+                .label(processData[1].COMMAND)
+                .onClick(onClick2)
+                .diameter(150)
+                .value(processData[1].CPU)
+                .render();
+
+                //console.log(processData[2].COMMAND);
+        radialProgress(document.getElementById('div3'))
+                .label(processData[2].COMMAND)
+                .onClick(onClick3)
+                .diameter(150)
+                .value(processData[2].CPU)
+                .render();
+
+       radialProgress(document.getElementById('div4'))
+                .label(processData[3].COMMAND)
+                .onClick(onClick4)
+                .diameter(150)
+                .value(processData[3].CPU)
+                .render();
+
+        radialProgress(document.getElementById('div5'))
+                .label(processData[4].COMMAND)
+                .onClick(onClick5)
+                .diameter(150)
+                .value(processData[4].CPU)
+                .render();
+
+        radialProgress(document.getElementById('div6'))
+                .label(processData[5].COMMAND)
+                .onClick(onClick6)
+                .diameter(150)
+                .value(processData[5].CPU)
+                .render();
+
+          // for(var i in json){
+          //   console.log("i ", i)
+          //   var t = parseInt(i)+1;
+          //   console.log("t ", t);
+          //   radialProgress(document.getElementById('div' + t.toString()))
+          //           .label(processData[parseInt(i)].COMMAND)
+          //           .value(processData[parseInt(i)].CPU)
+          //           .render();
+          // }
+
+
+          start();
+        });
+
+    }
+
+
+
+
+
+</script>
+
+</body>
+</html>
